@@ -10,7 +10,7 @@ const resolvers = {
     },
     totalStockValue: async () => {
         const products = await Product.find();
-        return products.reduce((acc, product) => acc + (product.price * product.amountInStock), 0);
+        return products.reduce((total, product) => total + (product.price * product.amountInStock), 0);
     },
     totalStockValueByManufacturer: async () => {
         const products = await Product.find();
@@ -49,6 +49,21 @@ const resolvers = {
         return [...new Map(manufacturers.map(m => [m.name, m])).values()];
     },
     addProduct: async ({ name, sku, description, price, category, manufacturer, amountInStock }) => {
+        //validera 
+        if (!name) throw new Error('Name is required');
+        if (!sku) throw new Error('SKU is required');
+        if (!price || price <= 0) throw new Error('Price must be a positive number');
+        if (!category) throw new Error('Category is required');
+        if (!manufacturer) throw new Error('Manufacturer is required');
+
+        //validera för manufacturer
+        if (!manufacturer.name) throw new Error('Manufacturer name is required');
+        if (!manufacturer.country) throw new Error('Manufacturer country is required');
+        if (!manufacturer.address) throw new Error('Manufacturer address is required');
+        if (!manufacturer.contact || !manufacturer.contact.name || !manufacturer.contact.email) {
+            throw new Error('Manufacturer contact is required');
+        }
+
         const product = new Product({
             name,
             sku,
@@ -69,8 +84,18 @@ const resolvers = {
         if (description) product.description = description;
         if (price) product.price = price;
         if (category) product.category = category;
-        if (manufacturer) product.manufacturer = manufacturer;
-        if (amountInStock) product.amountInStock = amountInStock;
+
+        if (manufacturer) {
+            if (!manufacturer.name) throw new Error('Manufacturer name is required');
+            if (!manufacturer.country) throw new Error('Manufacturer country is required');
+            if (!manufacturer.address) throw new Error('Manufacturer address is required');
+            if (!manufacturer.contact || !manufacturer.contact.name || !manufacturer.contact.email) {
+                throw new Error('Manufacturer contact is required');
+            }
+            product.manufacturer = manufacturer;
+        }
+
+        if (amountInStock !== undefined) product.amountInStock = amountInStock;
 
         return await product.save();
     },
