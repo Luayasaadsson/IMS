@@ -120,30 +120,18 @@ const ManufacturerCard: React.FC<ManufacturerCardProps> = ({
           </div>
           <div>
             <span className="font-bold">Address:</span>{" "}
-            {manufacturer.address ? (
-              <>
-                <div>
-                  {manufacturer.address?.street || "Street not available"}
-                </div>
-                <div>{manufacturer.address.city || "City not available"}</div>
-                <div>{manufacturer.address.zipCode || "Zip code not available"}</div>
-                <div>{manufacturer.address.country || "Country not available"}</div>
-              </>
-            ) : (
-              "Address not available"
-            )}
+            {manufacturer.address || "Address not available"}
           </div>
           <div>
             <span className="font-bold">Contact:</span>{" "}
-            {manufacturer.contact ? (
-              <>
-                <div>{manufacturer.contact.name || "Contact name not available"}</div>
-                <div>{manufacturer.contact.email || "Email: Email not available"}</div>
-                <div>{manufacturer.contact.phone || "Phone: Phone number not available"}</div>
-              </>
-            ) : (
-              "Contact information not available"
-            )}
+            {manufacturer.contact?.name || "Contact name not available"}
+            <div>
+              {manufacturer.contact?.email || "Email: Email not available"}
+            </div>
+            <div>
+              {manufacturer.contact?.phone ||
+                "Phone: Phone number not available"}
+            </div>
           </div>
         </>
       )}
@@ -152,4 +140,3 @@ const ManufacturerCard: React.FC<ManufacturerCardProps> = ({
 };
 
 export default ManufacturerCard;
-

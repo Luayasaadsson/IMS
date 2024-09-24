@@ -22,6 +22,7 @@ import ProductForm from "./ProductForm";
 import ProductCard from "./ProductCard";
 import ManufacturerCard from "./ManufacturerCard";
 import Loader from "./Loader"; // Komponent för att visa laddningsindikator.
+import { ScrollToTopButton } from "./ScrollToTopButton";
 
 const ProductList: React.FC = () => {
   // Använder useState för att hantera olika tillstånd (state) i komponenten.
@@ -113,10 +114,12 @@ const ProductList: React.FC = () => {
         setProducts((prevProducts) => [newProduct, ...prevProducts]); // Lägger till den nya produkten överst.
       }
       resetForm(); // Återställ formuläret.
-    } catch {
-      setError(
-        editingProductId ? "Error updating product" : "Error creating product"
-      ); // Hanterar eventuella fel.
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unknown error occurred");
+      }
     }
   };
 
@@ -249,6 +252,15 @@ const ProductList: React.FC = () => {
     );
   });
 
+  const filteredManufacturers = manufacturers.filter((manufacturer) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      manufacturer.name?.toLowerCase().includes(query) ||
+      manufacturer.country?.toLowerCase().includes(query) ||
+      manufacturer.website?.toLowerCase().includes(query)
+    );
+  });
+
   return (
     <div className="container mx-auto mt-8">
       <h1 className="text-2xl font-bold mb-4 text-neutral-100">Product List</h1>
@@ -263,8 +275,13 @@ const ProductList: React.FC = () => {
         />
       </div>
 
+      <ScrollToTopButton />
       {loading && <Loader />}
-      {error && <p className="text-center text-red-500">{error}</p>}
+      {error && (
+        <p className="text-center text-l p-2 text-white bg-red-500 rounded-md w-fit mx-auto">
+          {error}
+        </p>
+      )}
 
       <ProductForm
         product={formState}
@@ -284,10 +301,10 @@ const ProductList: React.FC = () => {
         onShowAllProducts={handleShowAllProducts}
       />
 
-      <div className="flex flex-row gap-6 flex-wrap justify-center">
+      <div className="flex flex-row gap-6 flex-wrap justify-center mb-14">
         {showManufacturers ? (
-          manufacturers.length > 0 ? (
-            manufacturers.map((manufacturer) => (
+          filteredManufacturers.length > 0 ? (
+            filteredManufacturers.map((manufacturer) => (
               <ManufacturerCard
                 key={manufacturer._id}
                 manufacturer={manufacturer}
@@ -326,7 +343,7 @@ const ProductList: React.FC = () => {
         {hasMore && (
           <button
             onClick={loadMoreProducts}
-            className="m-10 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-700"
+            className="m-10 bg-blue-500 text-white p-2 w-1/4 rounded-md hover:bg-blue-700"
           >
             Show More
           </button>
