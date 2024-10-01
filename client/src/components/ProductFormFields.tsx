@@ -35,6 +35,7 @@ const ProductFormFields: React.FC<ProductFormFieldsProps> = ({
       />
       <input
         type="number"
+        step="0.01" // Allowing decimal values
         name="price"
         placeholder="Price"
         value={product.price || ""}

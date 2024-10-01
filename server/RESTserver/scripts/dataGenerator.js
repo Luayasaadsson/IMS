@@ -48,7 +48,7 @@ async function generateTestData() {
     for (let i = 0; i < 1000; i++) {
       const product = {
         name: faker.commerce.productName(),
-        sku: faker.number.int(),
+        sku: faker.number.int({ min: 1, max: 2147483647 }),
         description: faker.commerce.productDescription(),
         price: faker.commerce.price(),
         category: faker.commerce.department(),

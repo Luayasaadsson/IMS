@@ -10,6 +10,7 @@ const {
   getCriticalStockProducts,
   getTotalStockValue,
   getManufacturers,
+  getTotalStockValueByManufacturer,
 } = require("../db/productCrud");
 const productModel = require("../db/models/product");
 
@@ -66,20 +67,10 @@ router.get("/manufacturers", async (req, res) => {
 //GET Total stock value by manufacturer
 router.get("/total-stock-value-by-manufacturer", async (req, res) => {
   try {
-    const stockValueByManufacturer = await productModel.aggregate([
-      {
-        $group: {
-          _id: "$manufacturer.name",
-          totalStockValue: {
-            $sum: { $multiply: ["$price", "$amountInStock"] },
-          },
-        },
-      },
-    ]);
-
+    const stockValueByManufacturer = await getTotalStockValueByManufacturer();
     res.json(stockValueByManufacturer);
   } catch (error) {
-    res.status(500).json({ message: "Error calculating total stock value" });
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -109,11 +100,7 @@ router.get("/", async (req, res) => {
     if (manufacturer) filter["manufacturer.name"] = manufacturer;
     if (amountInStock) filter.amountInStock = { $gte: amountInStock };
 
-    const products = await productModel
-      .find(filter)
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit));
-
+    const products = await findProducts(filter, { page, limit });
     res.json(products);
   } catch (err) {
     res.status(500).json({ message: err.message });

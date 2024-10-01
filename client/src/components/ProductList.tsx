@@ -22,7 +22,7 @@ import ProductForm from "./ProductForm";
 import ProductCard from "./ProductCard";
 import ManufacturerCard from "./ManufacturerCard";
 import Loader from "./Loader"; // Komponent för att visa laddningsindikator.
-import { ScrollToTopButton } from "./scrollToTopButton";
+import { ScrollToTopButton } from "./ScrollToTopButton";
 
 const ProductList: React.FC = () => {
   // Använder useState för att hantera olika tillstånd (state) i komponenten.

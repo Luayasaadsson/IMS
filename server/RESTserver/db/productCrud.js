@@ -7,7 +7,9 @@ const createProduct = async (productData) => {
     });
 
     if (existingProduct) {
-      throw new Error("Product with the same name or SKU already exists, please try again.");
+      throw new Error(
+        "Product with the same name or SKU already exists, please try again."
+      );
     }
 
     const product = new productModel(productData);
@@ -17,8 +19,10 @@ const createProduct = async (productData) => {
   }
 };
 
-const findProducts = async () => {
-  return productModel.find();
+const findProducts = async (filter = {}, options = {}) => {
+  const { page = 1, limit = 10 } = options;
+  const offset = (page - 1) * limit;
+  return productModel.find(filter).skip(offset).limit(limit);
 };
 
 const findProductById = async (id) => {
